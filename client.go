@@ -91,9 +91,12 @@ func (client *Client) RepositoryType(issueID string) (repositoryType string, err
 		return "", fmt.Errorf("RepositoryType found unexpected errors: %s", result.Errors)
 	}
 
-	instances := result.Summary.Repository.ByInstanceType
+	instances := result.Summary.Branch.ByInstanceType
 	if len(instances) == 0 {
-		return "", ErrNoRepositories
+		instances = result.Summary.Repository.ByInstanceType
+		if len(instances) == 0 {
+			return "", ErrNoRepositories
+		}
 	}
 	if len(instances) > 1 {
 		return "", fmt.Errorf("RepositoryType expected 1 repository type but found %d", len(instances))

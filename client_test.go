@@ -25,7 +25,7 @@ func TestIssuesByFilter(t *testing.T) {
 	assert.Equal(t, "PRO-1234", issues[0].Key)
 }
 
-func TestRepositoryType(t *testing.T) {
+func TestRepositoryType_FromRepository(t *testing.T) {
 	resBody := []byte(`{"errors":[],"summary":{"repository":{"byInstanceType":{"githube":{"count":15,"name":"GitHub Enterprise"}}}}}`)
 	server := httptest.NewServer(testHandler(resBody))
 	defer server.Close()
@@ -33,6 +33,18 @@ func TestRepositoryType(t *testing.T) {
 	require.NoError(t, err)
 
 	rType, err := client.RepositoryType("112233")
+	require.NoError(t, err)
+	assert.Equal(t, "githube", rType)
+}
+
+func TestRepositoryType_FromBranch(t *testing.T) {
+	resBody := []byte(`{"errors":[],"summary":{"branch":{"byInstanceType":{"githube":{"count":2,"name":"GitHub Enterprise"}}}}}`)
+	server := httptest.NewServer(testHandler(resBody))
+	defer server.Close()
+	client, err := gojira.NewClient(server.URL, "user", "password", 2*time.Second)
+	require.NoError(t, err)
+
+	rType, err := client.RepositoryType("445566")
 	require.NoError(t, err)
 	assert.Equal(t, "githube", rType)
 }

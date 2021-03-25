@@ -18,6 +18,9 @@ type Branch struct {
 }
 
 type devStatusSummary struct {
+	Branch struct {
+		ByInstanceType map[string]map[string]interface{} `json:"byInstanceType"`
+	} `json:"branch"`
 	Repository struct {
 		ByInstanceType map[string]map[string]interface{} `json:"byInstanceType"`
 	} `json:"repository"`
