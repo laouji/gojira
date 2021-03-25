@@ -2,12 +2,16 @@ package gojira
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"time"
 )
+
+// ErrNoRepositories indicates no repos found
+var ErrNoRepositories = errors.New("no repositories associated with this issue")
 
 // Client is an API Client for making request to Jira
 //
@@ -88,7 +92,10 @@ func (client *Client) RepositoryType(issueID string) (repositoryType string, err
 	}
 
 	instances := result.Summary.Repository.ByInstanceType
-	if len(instances) != 1 {
+	if len(instances) == 0 {
+		return "", ErrNoRepositories
+	}
+	if len(instances) > 1 {
 		return "", fmt.Errorf("RepositoryType expected 1 repository type but found %d", len(instances))
 	}
 
